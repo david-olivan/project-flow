@@ -6,19 +6,19 @@ ProjectFlow sigue una arquitectura de microservicios con separación clara entre
 ## Componentes Principales
 
 ### Frontend
-- React/Vue/Angular [Por decidir]
+- React
 - Estado global
 - Componentes reutilizables
 - Rutas protegidas
 
 ### Backend
-- Node.js/Express
+- Node.js
 - REST API
 - JWT Authentication
 - ORM (Prisma/Sequelize)
 
 ### Base de Datos
-- PostgreSQL
+- MySQL?/SQLite?
 - Schemas principales:
   - Users
   - Tasks

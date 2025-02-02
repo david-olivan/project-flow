@@ -26,7 +26,7 @@ ProjectFlow es una aplicación web fullstack para la gestión eficiente de tarea
 
 ## 💻 Tecnologías utilizadas
 
-- Frontend: [Por definir]
+- Frontend: React
 - Backend: [Por definir]
 - Base de datos: [Por definir]
 - Autenticación: [Por definir]
