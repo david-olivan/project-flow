@@ -1,0 +1,25 @@
+{
+  "name": "project-flow",
+  "version": "0.1.0",
+  "description": "A monorepo for Project Flow with SvelteKit frontend and FastAPI backend",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && fastapi dev main.py",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "setup": "npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && python -m venv .venv",
+    "test:backend": "cd backend && pytest",
+    "format:backend": "cd backend && black .",
+    "check:backend": "cd backend && black --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}
