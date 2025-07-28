@@ -26,7 +26,7 @@ This backend uses a standard Python virtual environment with pip instead of pipe
 
 4. **Run the FastAPI development server**:
    ```bash
-   fastapi dev backend/main.py
+   fastapi dev app/main.py
    ```
 
 ## Commands Reference
@@ -35,7 +35,7 @@ This backend uses a standard Python virtual environment with pip instead of pipe
 - **Deactivate virtual environment**: `deactivate`
 - **Install new package**: `pip install package_name`
 - **Update requirements**: `pip freeze > backend/requirements.txt`
-- **Run FastAPI dev server**: `fastapi dev backend/main.py`
+- **Run FastAPI dev server**: `fastapi dev app/main.py`
 
 ## VS Code Integration
 
@@ -52,8 +52,8 @@ When using VS Code with Git Bash as your integrated terminal:
 ```
 backend/
 ├── .venv/              # Virtual environment (git ignored)
-├── main.py             # FastAPI application
+├── app/main.py         # FastAPI application
 ├── requirements.txt    # Python dependencies
 ├── activate.sh         # Convenience script to activate venv
-└── DEV_SETUP.md       # This file
+└── DEV_SETUP.md        # This file
 ```

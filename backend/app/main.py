@@ -1,7 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="Project Flow API", version="0.1.0")
+from .database.database import init_db
+
+from .routes import auth
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+
+app = FastAPI(
+    lifespan=lifespan,
+    title="Project Flow API",
+    version="0.1.0",
+    description="API desarrollada para funcionar como el backend del desarrollo Project Flow de davidom.",
+)
 
 # Configure CORS
 app.add_middleware(
@@ -12,9 +29,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(auth.router)
+
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to Project Flow API"}
+
 
 @app.get("/health")
 async def health_check():
