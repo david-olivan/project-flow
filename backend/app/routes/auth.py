@@ -16,6 +16,16 @@ roles = ["admin", "user", "test"]
 
 @router.post("/user", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def create_user(user: UserRequest):
+    # Check if user with this email already exists
+    existing_user = await User.find_one(User.email == user.email)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"User with email {user.email} already exists"
+        )
+
+    # TODO: Hash password before storing (use bcrypt or argon2)
+    # Currently storing passwords in plain text - SECURITY RISK!
     nuevo_usuario = await User(**user.model_dump()).create()
     return nuevo_usuario
 
