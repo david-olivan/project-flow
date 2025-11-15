@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from beanie import PydanticObjectId
 from typing import List
 
-from ..database.models import Task, Project
+from ..database.models import Task, Project, User
 from ..models.tasks import TaskRequest, TaskResponse
 from ..controllers.auth import get_api_key_from_header, validate_api_key
 
@@ -26,8 +26,18 @@ async def create_task(
     if not project:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found"
+            detail=f"Project with id {task.belongs_to} not found"
         )
+
+    # Verify all assigned users exist
+    if task.assigned_to:
+        for email in task.assigned_to:
+            user = await User.find_one(User.email == email)
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"User with email {email} not found"
+                )
 
     # Create task with Link to project
     new_task = Task(
