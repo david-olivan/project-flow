@@ -6,6 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores/auth';
 	import { sidebarStore } from '$lib/stores/sidebar';
 	import { fade } from 'svelte/transition';
@@ -17,6 +18,9 @@
 
 	let { currentPath = '' }: SidebarProps = $props();
 	let isLoggingOut = $state(false);
+
+	// Check if we're on a project detail page
+	let isProjectDetailPage = $derived(currentPath.startsWith('/dashboard/projects/'));
 
 	onMount(() => {
 		sidebarStore.init();
@@ -36,9 +40,14 @@
 		console.log('New Project clicked - TODO: implement project creation');
 	}
 
-	// TODO: Make functional - connect to projects list view
+	// Navigate to all projects (dashboard)
 	function handleAllProjects() {
-		console.log('All Projects clicked - TODO: implement projects list');
+		goto('/dashboard');
+	}
+
+	// Navigate back from project detail page
+	function handleGoBack() {
+		goto('/dashboard');
 	}
 
 	// TODO: Make functional - connect to profile settings
@@ -58,40 +67,58 @@
 	<!-- Main Navigation -->
 	<nav class="sidebar-nav">
 		<ul class="nav-list">
-			<!-- TODO: Make functional - connect to project creation flow -->
-			<li>
-				<button class="nav-item" onclick={handleNewProject} aria-label="Create new project">
-					<svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M12 5v14m-7-7h14"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-					</svg>
-					<span>New Project</span>
-				</button>
-			</li>
+			{#if isProjectDetailPage}
+				<!-- Go Back button when on project detail page -->
+				<li>
+					<button class="nav-item" onclick={handleGoBack} aria-label="Go back to dashboard">
+						<svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M19 12H5M12 19l-7-7 7-7"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+						<span>Go Back</span>
+					</button>
+				</li>
+			{:else}
+				<!-- Default navigation items -->
+				<!-- TODO: Make functional - connect to project creation flow -->
+				<li>
+					<button class="nav-item" onclick={handleNewProject} aria-label="Create new project">
+						<svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M12 5v14m-7-7h14"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+						</svg>
+						<span>New Project</span>
+					</button>
+				</li>
 
-			<!-- TODO: Make functional - connect to projects list view -->
-			<li>
-				<button
-					class="nav-item"
-					class:active={currentPath === '/dashboard'}
-					onclick={handleAllProjects}
-					aria-label="View all projects"
-				>
-					<svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M3 7h18M3 12h18M3 17h18"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-						/>
-					</svg>
-					<span>All Projects</span>
-				</button>
-			</li>
+				<li>
+					<button
+						class="nav-item"
+						class:active={currentPath === '/dashboard'}
+						onclick={handleAllProjects}
+						aria-label="View all projects"
+					>
+						<svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M3 7h18M3 12h18M3 17h18"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+							/>
+						</svg>
+						<span>All Projects</span>
+					</button>
+				</li>
+			{/if}
 		</ul>
 	</nav>
 
@@ -204,8 +231,7 @@
 		top: 0;
 		z-index: 100;
 		transition: width var(--transition-slow), box-shadow var(--transition-base);
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden; /* Prevent any scrollbar during transition */
 	}
 
 	/* Hide scrollbar but keep functionality */
@@ -235,6 +261,13 @@
 		flex: 1;
 		padding: var(--spacing-4);
 		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	/* Hide scrollbar for nav section */
+	.sidebar-nav::-webkit-scrollbar {
+		width: 0px;
+		background: transparent;
 	}
 
 	.nav-list {

@@ -5,6 +5,7 @@
 	 * Displays project information in a card format
 	 */
 
+	import { goto } from '$app/navigation';
 	import type { Project } from '$lib/types';
 	import type { ViewMode } from '$lib/stores/viewPreferences';
 
@@ -42,9 +43,9 @@
 		return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 	}
 
-	// TODO: Make functional - navigate to project detail page
+	// Navigate to project detail page
 	function handleClick() {
-		console.log('Project clicked:', project.id, '- TODO: navigate to project detail');
+		goto(`/dashboard/projects/${project.id}`);
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -55,7 +56,6 @@
 	}
 </script>
 
-<!-- TODO: Make functional - navigate to project detail page -->
 <button class="project-card" class:list-mode={viewMode === 'list'} onclick={handleClick} onkeydown={handleKeyDown}>
 	<div class="card-header">
 		<h3 class="project-name">{project.name}</h3>
