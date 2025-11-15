@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from .database.database import init_db
 
-from .routes import auth
+from .routes import auth, tasks, projects
 
 
 @asynccontextmanager
@@ -31,6 +31,8 @@ app.add_middleware(
 
 
 app.include_router(auth.router)
+app.include_router(tasks.router)
+app.include_router(projects.router)
 
 
 @app.get("/")
