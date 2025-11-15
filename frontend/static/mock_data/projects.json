@@ -3,6 +3,7 @@
     {
       "id": "proj_001",
       "name": "Website Redesign",
+      "team": "Design & Development",
       "description": "Complete overhaul of company website with modern UI/UX",
       "status": "in_progress",
       "createdAt": "2025-11-01T09:00:00Z",
@@ -13,6 +14,7 @@
     {
       "id": "proj_002",
       "name": "Mobile App Development",
+      "team": "Mobile Team",
       "description": "iOS and Android app for task management on the go",
       "status": "planning",
       "createdAt": "2025-11-08T11:20:00Z",
@@ -23,6 +25,7 @@
     {
       "id": "proj_003",
       "name": "API Integration",
+      "team": "Backend Team",
       "description": "Connect third-party services and build unified API layer",
       "status": "in_progress",
       "createdAt": "2025-10-25T13:45:00Z",
