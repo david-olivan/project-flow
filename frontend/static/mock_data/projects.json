@@ -1,0 +1,34 @@
+{
+  "projects": [
+    {
+      "id": "proj_001",
+      "name": "Website Redesign",
+      "description": "Complete overhaul of company website with modern UI/UX",
+      "status": "in_progress",
+      "createdAt": "2025-11-01T09:00:00Z",
+      "updatedAt": "2025-11-15T16:30:00Z",
+      "taskCount": 24,
+      "completedTasks": 12
+    },
+    {
+      "id": "proj_002",
+      "name": "Mobile App Development",
+      "description": "iOS and Android app for task management on the go",
+      "status": "planning",
+      "createdAt": "2025-11-08T11:20:00Z",
+      "updatedAt": "2025-11-14T14:00:00Z",
+      "taskCount": 8,
+      "completedTasks": 2
+    },
+    {
+      "id": "proj_003",
+      "name": "API Integration",
+      "description": "Connect third-party services and build unified API layer",
+      "status": "in_progress",
+      "createdAt": "2025-10-25T13:45:00Z",
+      "updatedAt": "2025-11-15T10:15:00Z",
+      "taskCount": 16,
+      "completedTasks": 14
+    }
+  ]
+}
