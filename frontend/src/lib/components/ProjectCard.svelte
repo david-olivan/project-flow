@@ -6,12 +6,14 @@
 	 */
 
 	import type { Project } from '$lib/types';
+	import type { ViewMode } from '$lib/stores/viewPreferences';
 
 	interface ProjectCardProps {
 		project: Project;
+		viewMode?: ViewMode;
 	}
 
-	let { project }: ProjectCardProps = $props();
+	let { project, viewMode = 'grid' }: ProjectCardProps = $props();
 
 	// Calculate progress percentage
 	let progress = $derived(
@@ -54,7 +56,7 @@
 </script>
 
 <!-- TODO: Make functional - navigate to project detail page -->
-<button class="project-card" onclick={handleClick} onkeydown={handleKeyDown}>
+<button class="project-card" class:list-mode={viewMode === 'list'} onclick={handleClick} onkeydown={handleKeyDown}>
 	<div class="card-header">
 		<h3 class="project-name">{project.name}</h3>
 		<span class="status-badge {getStatusColor(project.status)}">
@@ -64,20 +66,24 @@
 
 	<p class="project-description">{project.description}</p>
 
-	<div class="project-stats">
-		<div class="stat">
-			<span class="stat-label">Tasks</span>
-			<span class="stat-value">{project.completedTasks}/{project.taskCount}</span>
+	<div class="card-content">
+		<div class="project-stats">
+			<div class="stat">
+				<span class="stat-label">Tasks</span>
+				<span class="stat-value">{project.completedTasks}/{project.taskCount}</span>
+			</div>
+
+			<div class="stat">
+				<span class="stat-label">Progress</span>
+				<span class="stat-value">{progress}%</span>
+			</div>
 		</div>
 
-		<div class="stat">
-			<span class="stat-label">Progress</span>
-			<span class="stat-value">{progress}%</span>
+		<div class="progress-container">
+			<div class="progress-bar">
+				<div class="progress-fill" style="width: {progress}%"></div>
+			</div>
 		</div>
-	</div>
-
-	<div class="progress-bar">
-		<div class="progress-fill" style="width: {progress}%"></div>
 	</div>
 
 	<div class="card-footer">
@@ -110,6 +116,49 @@
 	.project-card:focus {
 		outline: 2px solid var(--color-primary-500);
 		outline-offset: 2px;
+	}
+
+	/* List Mode Layout */
+	.project-card.list-mode {
+		flex-direction: row;
+		align-items: center;
+		padding: var(--spacing-4) var(--spacing-6);
+	}
+
+	.project-card.list-mode .card-header {
+		min-width: 280px;
+		flex-shrink: 0;
+	}
+
+	.project-card.list-mode .project-description {
+		flex: 1;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.project-card.list-mode .card-content {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-6);
+		min-width: 350px;
+	}
+
+	.project-card.list-mode .project-stats {
+		flex-direction: row;
+		gap: var(--spacing-6);
+	}
+
+	.project-card.list-mode .progress-container {
+		min-width: 120px;
+	}
+
+	.project-card.list-mode .card-footer {
+		border-top: none;
+		padding-top: 0;
+		min-width: 140px;
+		text-align: right;
 	}
 
 	/* Header */
@@ -216,5 +265,30 @@
 	.footer-text {
 		font-size: var(--font-size-xs);
 		color: var(--color-text-tertiary);
+	}
+
+	/* Responsive */
+	@media (max-width: 1024px) {
+		.project-card.list-mode {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.project-card.list-mode .card-header,
+		.project-card.list-mode .card-content,
+		.project-card.list-mode .card-footer {
+			min-width: auto;
+		}
+
+		.project-card.list-mode .card-content {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.project-card.list-mode .card-footer {
+			text-align: left;
+			border-top: 1px solid var(--color-border);
+			padding-top: var(--spacing-3);
+		}
 	}
 </style>

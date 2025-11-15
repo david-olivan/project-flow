@@ -9,12 +9,14 @@
 	import { fade, fly } from 'svelte/transition';
 	import type { Project } from '$lib/types';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
+	import { viewPreferencesStore } from '$lib/stores/viewPreferences';
 
 	let projects = $state<Project[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 
 	onMount(async () => {
+		viewPreferencesStore.init();
 		await loadProjects();
 	});
 
@@ -53,6 +55,42 @@
 			<h1 class="page-title">Projects</h1>
 			<p class="page-subtitle">Manage and track all your projects in one place</p>
 		</div>
+
+		<!-- View Mode Toggle -->
+		{#if !isLoading && !error && projects.length > 0}
+			<div class="view-toggle">
+				<button
+					class="view-button"
+					class:active={$viewPreferencesStore.projectViewMode === 'grid'}
+					onclick={() => viewPreferencesStore.setProjectViewMode('grid')}
+					aria-label="Grid view"
+					title="Grid view"
+				>
+					<svg class="view-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+						<rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+						<rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+						<rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" />
+					</svg>
+				</button>
+				<button
+					class="view-button"
+					class:active={$viewPreferencesStore.projectViewMode === 'list'}
+					onclick={() => viewPreferencesStore.setProjectViewMode('list')}
+					aria-label="List view"
+					title="List view"
+				>
+					<svg class="view-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<line x1="3" y1="6" x2="4" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<line x1="3" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<line x1="3" y1="18" x2="4" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+					</svg>
+				</button>
+			</div>
+		{/if}
 	</header>
 
 	<!-- Loading State -->
@@ -99,12 +137,16 @@
 		</div>
 	{/if}
 
-	<!-- Projects Grid -->
+	<!-- Projects Grid/List -->
 	{#if !isLoading && !error && projects.length > 0}
-		<div class="projects-grid">
+		<div
+			class="projects-container"
+			class:grid-view={$viewPreferencesStore.projectViewMode === 'grid'}
+			class:list-view={$viewPreferencesStore.projectViewMode === 'list'}
+		>
 			{#each projects as project, index (project.id)}
 				<div in:fly={{ y: 20, duration: 300, delay: 100 + index * 50 }}>
-					<ProjectCard {project} />
+					<ProjectCard {project} viewMode={$viewPreferencesStore.projectViewMode} />
 				</div>
 			{/each}
 		</div>
@@ -244,11 +286,59 @@
 		box-shadow: var(--shadow-md);
 	}
 
-	/* Projects Grid */
-	.projects-grid {
+	/* View Toggle */
+	.view-toggle {
+		display: flex;
+		gap: var(--spacing-2);
+		background-color: var(--color-neutral-100);
+		padding: var(--spacing-1);
+		border-radius: var(--radius-lg);
+	}
+
+	.view-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: var(--spacing-2);
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-md);
+		color: var(--color-text-tertiary);
+		cursor: pointer;
+		transition: all var(--transition-base);
+	}
+
+	.view-button:hover {
+		color: var(--color-primary-600);
+		background-color: var(--color-surface-elevated);
+	}
+
+	.view-button.active {
+		background-color: var(--color-surface-elevated);
+		color: var(--color-primary-600);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.view-icon {
+		width: 20px;
+		height: 20px;
+	}
+
+	/* Projects Container */
+	.projects-container {
+		transition: all var(--transition-base);
+	}
+
+	.projects-container.grid-view {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 		gap: var(--spacing-6);
+	}
+
+	.projects-container.list-view {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-4);
 	}
 
 	/* Responsive */
@@ -257,7 +347,17 @@
 			font-size: var(--font-size-3xl);
 		}
 
-		.projects-grid {
+		.page-header {
+			flex-direction: column;
+			gap: var(--spacing-4);
+			align-items: stretch;
+		}
+
+		.view-toggle {
+			align-self: flex-start;
+		}
+
+		.projects-container.grid-view {
 			grid-template-columns: 1fr;
 		}
 
