@@ -6,6 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
 	import type { Project } from '$lib/types';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 
@@ -47,7 +48,7 @@
 
 <div class="dashboard-page">
 	<!-- Page Header -->
-	<header class="page-header">
+	<header class="page-header" in:fade={{ duration: 300, delay: 100 }}>
 		<div>
 			<h1 class="page-title">Projects</h1>
 			<p class="page-subtitle">Manage and track all your projects in one place</p>
@@ -56,14 +57,15 @@
 
 	<!-- Loading State -->
 	{#if isLoading}
-		<div class="loading-state">
+		<div class="loading-state" in:fade={{ duration: 200 }}>
+			<div class="loading-spinner"></div>
 			<p>Loading projects...</p>
 		</div>
 	{/if}
 
 	<!-- Error State -->
 	{#if error && !isLoading}
-		<div class="error-state">
+		<div class="error-state" in:fade={{ duration: 200 }}>
 			<p class="error-message">{error}</p>
 			<button class="retry-button" onclick={loadProjects}>Try Again</button>
 		</div>
@@ -71,7 +73,7 @@
 
 	<!-- Empty State -->
 	{#if !isLoading && !error && projects.length === 0}
-		<div class="empty-state">
+		<div class="empty-state" in:fade={{ duration: 300, delay: 100 }}>
 			<svg
 				class="empty-icon"
 				viewBox="0 0 24 24"
@@ -100,8 +102,10 @@
 	<!-- Projects Grid -->
 	{#if !isLoading && !error && projects.length > 0}
 		<div class="projects-grid">
-			{#each projects as project (project.id)}
-				<ProjectCard {project} />
+			{#each projects as project, index (project.id)}
+				<div in:fly={{ y: 20, duration: 300, delay: 100 + index * 50 }}>
+					<ProjectCard {project} />
+				</div>
 			{/each}
 		</div>
 	{/if}
@@ -138,10 +142,27 @@
 	/* Loading State */
 	.loading-state {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		padding: var(--spacing-20);
+		gap: var(--spacing-4);
 		color: var(--color-text-secondary);
+	}
+
+	.loading-spinner {
+		width: 48px;
+		height: 48px;
+		border: 4px solid var(--color-primary-200);
+		border-top-color: var(--color-primary-600);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Error State */

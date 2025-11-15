@@ -5,7 +5,10 @@
 	 * Main navigation sidebar for the dashboard
 	 */
 
+	import { onMount } from 'svelte';
 	import { authStore } from '$lib/stores/auth';
+	import { sidebarStore } from '$lib/stores/sidebar';
+	import { fade } from 'svelte/transition';
 	import Logo from './Logo.svelte';
 
 	interface SidebarProps {
@@ -13,8 +16,18 @@
 	}
 
 	let { currentPath = '' }: SidebarProps = $props();
+	let isLoggingOut = $state(false);
 
-	function handleLogout() {
+	onMount(() => {
+		sidebarStore.init();
+	});
+
+	async function handleLogout() {
+		isLoggingOut = true;
+
+		// Small delay for UX, show logging out state
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
 		authStore.logout();
 	}
 
@@ -36,10 +49,10 @@
 	let user = $derived($authStore.user);
 </script>
 
-<aside class="sidebar">
+<aside class="sidebar" class:collapsed={$sidebarStore.isCollapsed}>
 	<!-- Top Section: Logo & Brand -->
 	<div class="sidebar-header">
-		<Logo size="md" />
+		<Logo size="md" showIcon={true} showText={!$sidebarStore.isCollapsed} />
 	</div>
 
 	<!-- Main Navigation -->
@@ -82,6 +95,41 @@
 		</ul>
 	</nav>
 
+	<!-- Collapse Toggle Button -->
+	<div class="sidebar-toggle">
+		<button
+			class="toggle-button"
+			onclick={() => sidebarStore.toggleCollapsed()}
+			aria-label={$sidebarStore.isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+			title={$sidebarStore.isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+		>
+			<svg class="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				{#if $sidebarStore.isCollapsed}
+					<!-- Expand icon (chevrons right) -->
+					<path
+						d="M13 17l5-5-5-5M6 17l5-5-5-5"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				{:else}
+					<!-- Collapse icon (chevrons left) -->
+					<path
+						d="M11 17l-5-5 5-5M18 17l-5-5 5-5"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				{/if}
+			</svg>
+			{#if !$sidebarStore.isCollapsed}
+				<span class="toggle-text">Collapse</span>
+			{/if}
+		</button>
+	</div>
+
 	<!-- Bottom Section: User Actions -->
 	<div class="sidebar-footer">
 		<!-- TODO: Make functional - connect to profile settings -->
@@ -98,32 +146,47 @@
 			<span class="footer-text">{user?.username || 'Profile'}</span>
 		</button>
 
-		<button class="footer-item logout" onclick={handleLogout} aria-label="Logout">
-			<svg class="footer-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path
-					d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-				/>
-				<polyline
-					points="16 17 21 12 16 7"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				/>
-				<line
-					x1="21"
-					y1="12"
-					x2="9"
-					y2="12"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-				/>
-			</svg>
-			<span class="footer-text">Logout</span>
+		<button
+			class="footer-item logout"
+			onclick={handleLogout}
+			disabled={isLoggingOut}
+			aria-label="Logout"
+		>
+			{#if isLoggingOut}
+				<div class="logout-spinner"></div>
+				<span class="footer-text">Logging out...</span>
+			{:else}
+				<svg
+					class="footer-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+					/>
+					<polyline
+						points="16 17 21 12 16 7"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+					<line
+						x1="21"
+						y1="12"
+						x2="9"
+						y2="12"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+					/>
+				</svg>
+				<span class="footer-text">Logout</span>
+			{/if}
 		</button>
 	</div>
 </aside>
@@ -140,12 +203,31 @@
 		left: 0;
 		top: 0;
 		z-index: 100;
+		transition: width var(--transition-slow), box-shadow var(--transition-base);
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	/* Hide scrollbar but keep functionality */
+	.sidebar::-webkit-scrollbar {
+		width: 0px;
+		background: transparent;
+	}
+
+	.sidebar.collapsed {
+		width: 72px;
 	}
 
 	/* Header */
 	.sidebar-header {
 		padding: var(--spacing-6);
 		border-bottom: 1px solid var(--color-border);
+		display: flex;
+		justify-content: flex-start;
+	}
+
+	.sidebar.collapsed .sidebar-header {
+		justify-content: center;
 	}
 
 	/* Navigation */
@@ -167,9 +249,10 @@
 	.nav-item {
 		display: flex;
 		align-items: center;
+		justify-content: flex-start;
 		gap: var(--spacing-3);
 		width: 100%;
-		padding: var(--spacing-3) var(--spacing-4);
+		padding: var(--spacing-3);
 		background: transparent;
 		border: none;
 		border-radius: var(--radius-lg);
@@ -177,8 +260,18 @@
 		font-size: var(--font-size-base);
 		font-weight: var(--font-weight-medium);
 		cursor: pointer;
-		transition: var(--transition-colors);
+		transition: all var(--transition-base);
 		text-align: left;
+		white-space: nowrap;
+	}
+
+	.sidebar.collapsed .nav-item {
+		justify-content: center;
+		padding: var(--spacing-3);
+	}
+
+	.sidebar.collapsed .nav-item span {
+		display: none;
 	}
 
 	.nav-item:hover {
@@ -186,24 +279,16 @@
 		color: var(--color-primary-700);
 	}
 
-	[data-theme='dark'] .nav-item:hover {
-		background-color: var(--color-primary-900);
-		color: var(--color-primary-300);
-	}
-
 	.nav-item.active {
 		background-color: var(--color-primary-100);
 		color: var(--color-primary-700);
 	}
 
-	[data-theme='dark'] .nav-item.active {
-		background-color: var(--color-primary-800);
-		color: var(--color-primary-300);
-	}
-
 	.nav-icon {
 		width: 20px;
 		height: 20px;
+		min-width: 20px;
+		min-height: 20px;
 		flex-shrink: 0;
 	}
 
@@ -219,9 +304,10 @@
 	.footer-item {
 		display: flex;
 		align-items: center;
+		justify-content: flex-start;
 		gap: var(--spacing-3);
 		width: 100%;
-		padding: var(--spacing-3) var(--spacing-4);
+		padding: var(--spacing-3);
 		background: transparent;
 		border: none;
 		border-radius: var(--radius-lg);
@@ -229,17 +315,18 @@
 		font-size: var(--font-size-sm);
 		font-weight: var(--font-weight-medium);
 		cursor: pointer;
-		transition: var(--transition-colors);
+		transition: all var(--transition-base);
 		text-align: left;
 	}
 
-	.footer-item:hover {
-		background-color: var(--color-neutral-100);
-		color: var(--color-text-primary);
+	.sidebar.collapsed .footer-item {
+		justify-content: center;
+		padding: var(--spacing-3);
 	}
 
-	[data-theme='dark'] .footer-item:hover {
-		background-color: var(--color-neutral-800);
+	.footer-item:hover {
+		background-color: var(--color-primary-50);
+		color: var(--color-primary-700);
 	}
 
 	.footer-item.logout {
@@ -254,6 +341,8 @@
 	.footer-icon {
 		width: 18px;
 		height: 18px;
+		min-width: 18px;
+		min-height: 18px;
 		flex-shrink: 0;
 	}
 
@@ -262,6 +351,82 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.sidebar.collapsed .footer-text {
+		display: none;
+	}
+
+	.sidebar.collapsed .toggle-text {
+		display: none;
+	}
+
+	/* Sidebar Toggle */
+	.sidebar-toggle {
+		padding: var(--spacing-4);
+		border-top: 1px solid var(--color-border);
+	}
+
+	.toggle-button {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: var(--spacing-3);
+		width: 100%;
+		padding: var(--spacing-3);
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-lg);
+		color: var(--color-text-secondary);
+		font-size: var(--font-size-sm);
+		font-weight: var(--font-weight-medium);
+		cursor: pointer;
+		transition: all var(--transition-base);
+		text-align: left;
+	}
+
+	.sidebar.collapsed .toggle-button {
+		justify-content: center;
+		padding: var(--spacing-3);
+	}
+
+	.toggle-button:hover {
+		background-color: var(--color-neutral-100);
+		color: var(--color-primary-600);
+	}
+
+	.toggle-icon {
+		width: 18px;
+		height: 18px;
+		min-width: 18px;
+		min-height: 18px;
+		flex-shrink: 0;
+	}
+
+	.toggle-text {
+		font-size: var(--font-size-sm);
+		white-space: nowrap;
+	}
+
+	.logout-spinner {
+		width: 18px;
+		height: 18px;
+		border: 2px solid rgba(239, 68, 68, 0.3);
+		border-top-color: var(--color-error);
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+		flex-shrink: 0;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.footer-item:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
 	}
 
 	/* Responsive */
@@ -275,8 +440,5 @@
 		}
 
 		/* TODO: Add mobile menu toggle functionality */
-		.sidebar.open {
-			transform: translateX(0);
-		}
 	}
 </style>

@@ -12,6 +12,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { fade, scale } from 'svelte/transition';
 	import { authStore } from '$lib/stores/auth';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
@@ -20,6 +21,7 @@
 	let apiKey = $state('');
 	let error = $state('');
 	let isLoading = $state(false);
+	let showSuccess = $state(false);
 
 	// Redirect if already authenticated
 	onMount(() => {
@@ -44,14 +46,20 @@
 			const success = await authStore.login(apiKey);
 
 			if (success) {
-				goto('/dashboard');
+				// Show success animation
+				showSuccess = true;
+
+				// Wait for animation, then navigate
+				setTimeout(() => {
+					goto('/dashboard');
+				}, 800);
 			} else {
 				error = 'Invalid API key. Please check your key and try again.';
+				isLoading = false;
 			}
 		} catch (err) {
 			error = 'An error occurred. Please try again.';
 			console.error('Login error:', err);
-		} finally {
 			isLoading = false;
 		}
 	}
@@ -65,6 +73,25 @@
 </svelte:head>
 
 <div class="login-page">
+	<!-- Success Overlay -->
+	{#if showSuccess}
+		<div class="success-overlay" transition:fade={{ duration: 200 }}>
+			<div class="success-content" in:scale={{ duration: 300, delay: 100 }}>
+				<div class="success-checkmark">
+					<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+						<circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+						<path
+							class="checkmark-check"
+							fill="none"
+							d="M14.1 27.2l7.1 7.2 16.7-16.8"
+						/>
+					</svg>
+				</div>
+				<p class="success-message">Login successful!</p>
+			</div>
+		</div>
+	{/if}
+
 	<div class="login-container">
 		<div class="login-card">
 			<!-- Logo and Header -->
@@ -234,6 +261,89 @@
 		display: inline-block;
 	}
 
+	/* Success Overlay */
+	.success-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(8px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10000;
+	}
+
+	.success-content {
+		background-color: var(--color-surface-elevated);
+		padding: var(--spacing-10);
+		border-radius: var(--radius-2xl);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-4);
+		box-shadow: var(--shadow-2xl);
+	}
+
+	.success-checkmark {
+		width: 80px;
+		height: 80px;
+	}
+
+	.success-checkmark svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.checkmark-circle {
+		stroke: var(--color-success);
+		stroke-width: 2;
+		stroke-miterlimit: 10;
+		animation: fill 0.4s ease-in-out 0.3s forwards, scale 0.3s ease-in-out 0.9s both;
+	}
+
+	.checkmark-check {
+		transform-origin: 50% 50%;
+		stroke-dasharray: 48;
+		stroke-dashoffset: 48;
+		stroke: var(--color-success);
+		stroke-width: 3;
+		stroke-linecap: round;
+		animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+	}
+
+	@keyframes stroke {
+		100% {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@keyframes fill {
+		100% {
+			fill: var(--color-success);
+			fill-opacity: 0.1;
+		}
+	}
+
+	@keyframes scale {
+		0%,
+		100% {
+			transform: none;
+		}
+		50% {
+			transform: scale3d(1.1, 1.1, 1);
+		}
+	}
+
+	.success-message {
+		font-size: var(--font-size-xl);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-primary);
+		margin: 0;
+	}
+
 	/* Responsive */
 	@media (max-width: 640px) {
 		.login-card {
@@ -246,6 +356,19 @@
 
 		.dev-note {
 			font-size: var(--font-size-xs);
+		}
+
+		.success-content {
+			padding: var(--spacing-8);
+		}
+
+		.success-checkmark {
+			width: 60px;
+			height: 60px;
+		}
+
+		.success-message {
+			font-size: var(--font-size-lg);
 		}
 	}
 </style>

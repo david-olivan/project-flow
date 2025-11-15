@@ -4,6 +4,8 @@
 	import '../styles/reset.css';
 	import '../styles/global.css';
 
+	let { children } = $props();
+
 	// Initialize theme on mount
 	onMount(() => {
 		// Check for saved theme preference or default to system preference
@@ -15,4 +17,4 @@
 	});
 </script>
 
-<slot />
+{@render children()}

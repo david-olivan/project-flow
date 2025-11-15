@@ -44,10 +44,17 @@
 	function handleClick() {
 		console.log('Project clicked:', project.id, '- TODO: navigate to project detail');
 	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			handleClick();
+		}
+	}
 </script>
 
 <!-- TODO: Make functional - navigate to project detail page -->
-<article class="project-card" onclick={handleClick} role="button" tabindex="0">
+<button class="project-card" onclick={handleClick} onkeydown={handleKeyDown}>
 	<div class="card-header">
 		<h3 class="project-name">{project.name}</h3>
 		<span class="status-badge {getStatusColor(project.status)}">
@@ -76,10 +83,12 @@
 	<div class="card-footer">
 		<span class="footer-text">Updated {formatDate(project.updatedAt)}</span>
 	</div>
-</article>
+</button>
 
 <style>
 	.project-card {
+		width: 100%;
+		text-align: left;
 		background-color: var(--color-surface-elevated);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-card);
@@ -134,19 +143,9 @@
 		color: var(--color-neutral-700);
 	}
 
-	[data-theme='dark'] .status-planning {
-		background-color: var(--color-neutral-800);
-		color: var(--color-neutral-300);
-	}
-
 	.status-in-progress {
 		background-color: var(--color-accent-100);
 		color: var(--color-accent-700);
-	}
-
-	[data-theme='dark'] .status-in-progress {
-		background-color: var(--color-accent-900);
-		color: var(--color-accent-300);
 	}
 
 	.status-completed {
@@ -199,10 +198,6 @@
 		background-color: var(--color-neutral-200);
 		border-radius: var(--radius-full);
 		overflow: hidden;
-	}
-
-	[data-theme='dark'] .progress-bar {
-		background-color: var(--color-neutral-700);
 	}
 
 	.progress-fill {

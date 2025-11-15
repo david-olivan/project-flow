@@ -4,11 +4,11 @@
 
 /**
  * Validates API key format
- * Format: pFlow010-[22 chars]-[22 chars]-[22 chars]
+ * Format: pFlow010-[31 chars]-[5 chars]-[5 chars]
  */
 export function validateApiKeyFormat(apiKey: string): boolean {
 	// API key pattern: pFlow010- followed by three segments of alphanumeric + underscore/hyphen
-	const apiKeyPattern = /^pFlow010-[A-Za-z0-9_-]{22}-[A-Za-z0-9_-]{22}-[A-Za-z0-9_-]{22}$/;
+	const apiKeyPattern = /^pFlow010-[A-Za-z0-9_-]{31}-[A-Za-z0-9_-]{5}-[A-Za-z0-9_-]{5}$/;
 	return apiKeyPattern.test(apiKey);
 }
 

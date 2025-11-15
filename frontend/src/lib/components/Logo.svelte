@@ -8,9 +8,10 @@
 	interface LogoProps {
 		size?: 'sm' | 'md' | 'lg';
 		showIcon?: boolean;
+		showText?: boolean;
 	}
 
-	let { size = 'md', showIcon = true }: LogoProps = $props();
+	let { size = 'md', showIcon = true, showText = true }: LogoProps = $props();
 </script>
 
 <div class="logo logo-{size}">
@@ -32,7 +33,9 @@
 			</svg>
 		</div>
 	{/if}
-	<span class="logo-text">ProjectFlow</span>
+	{#if showText}
+		<span class="logo-text">ProjectFlow</span>
+	{/if}
 </div>
 
 <style>
@@ -46,6 +49,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.icon-primary {
@@ -71,6 +75,8 @@
 	.logo-sm .logo-icon {
 		width: 24px;
 		height: 24px;
+		min-width: 24px;
+		min-height: 24px;
 	}
 
 	.logo-sm .logo-text {
@@ -80,6 +86,8 @@
 	.logo-md .logo-icon {
 		width: 32px;
 		height: 32px;
+		min-width: 32px;
+		min-height: 32px;
 	}
 
 	.logo-md .logo-text {
@@ -89,6 +97,8 @@
 	.logo-lg .logo-icon {
 		width: 48px;
 		height: 48px;
+		min-width: 48px;
+		min-height: 48px;
 	}
 
 	.logo-lg .logo-text {
