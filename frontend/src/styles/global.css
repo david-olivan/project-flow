@@ -1,0 +1,218 @@
+/* Global Styles - davidom Brand Kit Implementation */
+
+/* Base Typography */
+body {
+	font-family: var(--font-family-primary);
+	font-size: var(--font-size-base);
+	font-weight: var(--font-weight-normal);
+	line-height: var(--line-height-normal);
+	color: var(--color-text-primary);
+	background-color: var(--color-background);
+	transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* Headings */
+h1,
+.heading-1 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-5xl);
+	font-weight: var(--font-weight-bold);
+	line-height: var(--line-height-tight);
+	letter-spacing: var(--letter-spacing-tight);
+	color: var(--color-text-primary);
+}
+
+h2,
+.heading-2 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-4xl);
+	font-weight: var(--font-weight-bold);
+	line-height: var(--line-height-tight);
+	letter-spacing: var(--letter-spacing-tight);
+	color: var(--color-text-primary);
+}
+
+h3,
+.heading-3 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-3xl);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--line-height-tight);
+	color: var(--color-text-primary);
+}
+
+h4,
+.heading-4 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-2xl);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--line-height-normal);
+	color: var(--color-text-primary);
+}
+
+h5,
+.heading-5 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-xl);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--line-height-normal);
+	color: var(--color-text-primary);
+}
+
+h6,
+.heading-6 {
+	font-family: var(--font-family-heading);
+	font-size: var(--font-size-lg);
+	font-weight: var(--font-weight-semibold);
+	line-height: var(--line-height-normal);
+	color: var(--color-text-primary);
+}
+
+/* Body Text Variants */
+.body-large {
+	font-size: var(--font-size-lg);
+	line-height: var(--line-height-relaxed);
+}
+
+.body-small {
+	font-size: var(--font-size-sm);
+	line-height: var(--line-height-normal);
+}
+
+/* Code */
+code,
+pre,
+.code {
+	font-family: var(--font-family-mono);
+	font-size: var(--font-size-sm);
+}
+
+/* Layout Utilities */
+.container {
+	width: 100%;
+	max-width: 1280px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--spacing-container);
+	padding-right: var(--spacing-container);
+}
+
+.container-narrow {
+	max-width: 768px;
+}
+
+.container-wide {
+	max-width: 1536px;
+}
+
+.section {
+	padding-top: var(--spacing-section);
+	padding-bottom: var(--spacing-section);
+}
+
+/* Grid */
+.grid {
+	display: grid;
+	gap: var(--spacing-6);
+}
+
+.grid-2 {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+	grid-template-columns: repeat(4, 1fr);
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+	.grid-2,
+	.grid-3,
+	.grid-4 {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Card Component */
+.card {
+	background-color: var(--color-surface-elevated);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-card);
+	padding: var(--spacing-card);
+	box-shadow: var(--shadow-sm);
+	transition: var(--transition-all);
+}
+
+.card:hover {
+	box-shadow: var(--shadow-md);
+	border-color: var(--color-border-subtle);
+}
+
+.card-interactive {
+	cursor: pointer;
+}
+
+.card-interactive:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-lg);
+}
+
+/* Link Styles */
+.link {
+	color: var(--color-primary-600);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	transition: var(--transition-colors);
+}
+
+.link:hover {
+	color: var(--color-primary-700);
+	text-decoration-thickness: 2px;
+}
+
+.link:focus-visible {
+	outline: 2px solid var(--color-primary-500);
+	outline-offset: 2px;
+	border-radius: var(--radius-sm);
+}
+
+/* Text Color Utilities */
+.text-primary {
+	color: var(--color-text-primary);
+}
+
+.text-secondary {
+	color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+	color: var(--color-text-tertiary);
+}
+
+.text-error {
+	color: var(--color-error);
+}
+
+.text-success {
+	color: var(--color-success);
+}
+
+.text-warning {
+	color: var(--color-warning);
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
